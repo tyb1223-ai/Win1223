@@ -11,15 +11,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
-      - name: Publish Win1223
+      - name: Publish EXE
         shell: pwsh
         run: |
           dotnet publish src/Win1223.csproj `
@@ -29,23 +27,8 @@ jobs:
             /p:PublishSingleFile=true `
             /p:PublishTrimmed=false
 
-      - name: Install NSIS
-        shell: pwsh
-        run: |
-          choco install nsis -y
-
-      - name: Copy EXE
-        shell: pwsh
-        run: |
-          Copy-Item "src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe" "Win1223.exe"
-
-      - name: Build Installer
-        shell: pwsh
-        run: |
-          makensis installer.nsi
-
-      - name: Upload Installer
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: Win1223_Setup
-          path: Win1223_Setup.exe
+          name: Win1223
+          path: src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
