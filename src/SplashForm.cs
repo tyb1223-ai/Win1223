@@ -1,60 +1,75 @@
-using System.Runtime.InteropServices;
-
 namespace Win1223;
 
-public partial class SplashForm : Form
+public class SplashForm : Form
 {
+    private readonly Label title;
+    private readonly Label status;
+    private readonly ProgressBar progress;
+
     public SplashForm()
     {
-        InitializeComponent();
-    }
+        Text = "Win1223";
 
-    protected override void OnHandleCreated(EventArgs e)
-    {
-        base.OnHandleCreated(e);
+        ClientSize = new Size(430,220);
 
-        // Windows 11 原生圆角
-        if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
+        StartPosition = FormStartPosition.CenterScreen;
+
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+
+        MaximizeBox = false;
+        MinimizeBox = false;
+
+        BackColor = Color.White;
+
+        Font = new Font("Segoe UI",9);
+
+        title = new Label
         {
-            const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
-            const int DWMWCP_ROUND = 2;
+            Text="Win1223 Cloud PC",
+            Font=new Font("Segoe UI",18,FontStyle.Bold),
+            AutoSize=true,
+            Location=new Point(60,40)
+        };
 
-            int preference = DWMWCP_ROUND;
+        status = new Label
+        {
+            Text="正在连接服务器...",
+            AutoSize=true,
+            ForeColor=Color.Gray,
+            Location=new Point(60,90)
+        };
 
-            DwmSetWindowAttribute(
-                Handle,
-                DWMWA_WINDOW_CORNER_PREFERENCE,
-                ref preference,
-                sizeof(int));
-        }
+        progress = new ProgressBar
+        {
+            Location=new Point(60,145),
+            Size=new Size(310,16),
+            Style=ProgressBarStyle.Continuous
+        };
+
+        Controls.Add(title);
+        Controls.Add(status);
+        Controls.Add(progress);
     }
-
-    [DllImport("dwmapi.dll")]
-    private static extern int DwmSetWindowAttribute(
-        IntPtr hwnd,
-        int attribute,
-        ref int value,
-        int size);
 
     public void SetStatus(string text)
     {
-        if (InvokeRequired)
+        if(InvokeRequired)
         {
-            Invoke(() => SetStatus(text));
+            Invoke(()=>SetStatus(text));
             return;
         }
 
-        lblStatus.Text = text;
+        status.Text=text;
     }
 
     public void SetProgress(int value)
     {
-        if (InvokeRequired)
+        if(InvokeRequired)
         {
-            Invoke(() => SetProgress(value));
+            Invoke(()=>SetProgress(value));
             return;
         }
 
-        progress.Value = Math.Max(0, Math.Min(100, value));
+        progress.Value=Math.Max(0,Math.Min(100,value));
     }
 }
