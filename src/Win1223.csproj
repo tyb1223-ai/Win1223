@@ -10,14 +10,27 @@
 
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
-    <SelfContained>true</SelfContained>
+    <!-- 不再打包整个.NET运行时 -->
+    <SelfContained>false</SelfContained>
 
+    <!-- 单文件 -->
     <PublishSingleFile>true</PublishSingleFile>
 
+    <!-- WinForms不要Trim -->
     <PublishTrimmed>false</PublishTrimmed>
 
-    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 程序信息 -->
+    <AssemblyName>Win1223</AssemblyName>
+    <Product>Win1223 Cloud PC</Product>
+    <Company>1223.fun</Company>
 
+    <FileVersion>3.0.0.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+
+    <!-- 图标 -->
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
   </PropertyGroup>
