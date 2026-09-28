@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace Win1223;
@@ -11,11 +12,16 @@ public static class WakeService
         try
         {
             client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", Config.ApiToken);
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    Config.ApiToken);
 
-            var r = await client.PostAsync(Config.ApiUrl, null);
+            using var response =
+                await client.PostAsync(
+                    Config.ApiUrl,
+                    null);
 
-            return r.IsSuccessStatusCode;
+            return response.IsSuccessStatusCode;
         }
         catch
         {
