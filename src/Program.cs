@@ -1,6 +1,4 @@
-using System;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace Win1223;
 
@@ -14,13 +12,14 @@ internal static class Program
         if (!first)
             return;
 
-        ApplicationConfiguration.Initialize();
-
         bool ok = await WakeService.WakeAsync();
 
         if (!ok)
         {
-            MessageBox.Show("唤醒失败。", "Win1223");
+            NativeMessageBox.Show(
+                "唤醒服务器失败。",
+                "Win1223");
+
             return;
         }
 
@@ -28,7 +27,10 @@ internal static class Program
 
         if (!ok)
         {
-            MessageBox.Show("等待远程桌面超时。", "Win1223");
+            NativeMessageBox.Show(
+                "等待 Windows 虚拟机启动超时（60 秒）。",
+                "Win1223");
+
             return;
         }
 
