@@ -38,11 +38,26 @@ public static class RdpLauncher
 
     public static void Launch()
     {
+        if (IsMstscRunning())
+            return;
+
         Process.Start(new ProcessStartInfo
         {
             FileName = "mstsc.exe",
             Arguments = $"/v:{Config.Host}:{Config.Port}",
             UseShellExecute = true
         });
+    }
+
+    private static bool IsMstscRunning()
+    {
+        try
+        {
+            return Process.GetProcessesByName("mstsc").Length > 0;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
