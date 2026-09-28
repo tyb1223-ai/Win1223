@@ -20,16 +20,19 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Publish Win1223
-        run: >
-          dotnet publish src/Win1223.csproj
-          -c Release
-          -r win-x64
-          --self-contained true
-          /p:PublishSingleFile=true
-         /p:PublishTrimmed=false
+        shell: pwsh
+        run: |
+          dotnet publish src/Win1223.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            /p:PublishSingleFile=true `
+            /p:PublishTrimmed=false
 
       - name: Install NSIS
-        run: choco install nsis -y
+        shell: pwsh
+        run: |
+          choco install nsis -y
 
       - name: Copy EXE
         shell: pwsh
@@ -37,7 +40,9 @@ jobs:
           Copy-Item "src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe" "Win1223.exe"
 
       - name: Build Installer
-        run: makensis installer.nsi
+        shell: pwsh
+        run: |
+          makensis installer.nsi
 
       - name: Upload Installer
         uses: actions/upload-artifact@v4
