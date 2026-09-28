@@ -1,1 +1,80 @@
-using System.Diagnostics; using System.Net.Sockets; namespace Win1223; internal static class RdpLauncher{public static async System.Threading.Tasks.Task<bool> WaitPort(){var end=System.DateTime.Now.AddSeconds(Config.TimeoutSeconds); while(System.DateTime.Now<end){try{using var t=new TcpClient(); var c=t.ConnectAsync(Config.Host,Config.Port); if(await System.Threading.Tasks.Task.WhenAny(c,System.Threading.Tasks.Task.Delay(500))==c&&t.Connected)return true;}catch{} await System.Threading.Tasks.Task.Delay(500);} return false;} static bool HasWindowsApp(){try{var p=new Process(); p.StartInfo.FileName="powershell"; p.StartInfo.Arguments="-NoProfile -Command \"Get-StartApps 'Windows App'\""; p.StartInfo.UseShellExecute=false; p.StartInfo.RedirectStandardOutput=true; p.Start(); var o=p.StandardOutput.ReadToEnd(); p.WaitForExit(); return o.Contains("Windows365");}catch{return false;}} public static void Launch(){if(HasWindowsApp()){Process.Start(new ProcessStartInfo{FileName="explorer.exe",Arguments=$"shell:AppsFolder\\{Config.WindowsAppAUMID}",UseShellExecute=true});return;} string r=System.IO.Path.Combine(System.IO.Path.GetTempPath(),$"Win1223_{System.Guid.NewGuid()}.rdp"); System.IO.File.WriteAllText(r,$"full address:s:{Config.Host}:{Config.Port}\nscreen mode id:i:2\nredirectclipboard:i:1\ndrivestoredirect:s:*"); var p=Process.Start("mstsc.exe",r); p?.WaitForExit(); try{System.IO.File.Delete(r);}catch{}}}
+using System.Diagnostics;
+using System.Management;
+using System.Net.Sockets;
+
+namespace Win1223;
+
+public static class RdpLauncher
+{
+    public static async Task<bool> WaitForPortAsync()
+    {
+        var end = DateTime.Now.AddSeconds(Config.MaxWaitSeconds);
+
+        while (DateTime.Now < end)
+        {
+            using var tcp = new TcpClient();
+
+            try
+            {
+                var t = tcp.ConnectAsync(Config.Host, Config.Port);
+
+                var ok = await Task.WhenAny(
+                    t,
+                    Task.Delay(300));
+
+                if (ok == t && tcp.Connected)
+                    return true;
+            }
+            catch
+            {
+            }
+
+            await Task.Delay(300);
+        }
+
+        return false;
+    }
+
+    public static void Launch()
+    {
+        if (LaunchWindowsApp())
+            return;
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "mstsc.exe",
+            Arguments = $"/v:{Config.Host}:{Config.Port}",
+            UseShellExecute = true
+        });
+    }
+
+    private static bool LaunchWindowsApp()
+    {
+        try
+        {
+            using var s = new ManagementObjectSearcher(
+                "SELECT Name FROM Win32_InstalledStoreProgram");
+
+            foreach (ManagementObject m in s.Get())
+            {
+                if (m["Name"]?.ToString() == "Windows App")
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments =
+                            "shell:AppsFolder\\MicrosoftCorporationII.Windows365_8wekyb3d8bbwe!Windows365",
+                        UseShellExecute = true
+                    });
+
+                    return true;
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        return false;
+    }
+}
