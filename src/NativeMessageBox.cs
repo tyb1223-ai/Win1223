@@ -2,23 +2,17 @@ using System.Runtime.InteropServices;
 
 namespace Win1223;
 
-public static partial class NativeMessageBox
+public static class NativeMessageBox
 {
-    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial int MessageBoxW(
-        nint hWnd,
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int MessageBoxW(
+        IntPtr hWnd,
         string text,
         string caption,
         uint type);
 
-    public static void Show(
-        string text,
-        string caption)
+    public static void Show(string text, string caption)
     {
-        MessageBoxW(
-            0,
-            text,
-            caption,
-            0x00000040);
+        MessageBoxW(IntPtr.Zero, text, caption, 0x40);
     }
 }
