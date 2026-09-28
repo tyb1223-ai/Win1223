@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Win1223;
@@ -11,8 +12,14 @@ public static class NativeMessageBox
         string caption,
         uint type);
 
-    public static void Show(string text, string caption)
+    public static void Show(
+        string text,
+        string caption)
     {
-        MessageBoxW(IntPtr.Zero, text, caption, 0x40);
+        MessageBoxW(
+            IntPtr.Zero,
+            text,
+            caption,
+            0x40);
     }
 }
