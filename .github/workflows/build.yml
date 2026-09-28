@@ -11,10 +11,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-dotnet@v5
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
 
@@ -26,7 +27,8 @@ jobs:
             -r win-x64 `
             --self-contained true
 
-      - uses: actions/upload-artifact@v5
+      - name: Upload
+        uses: actions/upload-artifact@v5
         with:
           name: Win1223
           path: src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
