@@ -1,1 +1,25 @@
-using System.Net.Http.Headers; namespace Win1223; internal static class WakeService{public static async System.Threading.Tasks.Task Wake(){try{using var c=new System.Net.Http.HttpClient(); c.Timeout=System.TimeSpan.FromSeconds(5); c.DefaultRequestHeaders.Authorization=new AuthenticationHeaderValue("Bearer",Config.Token); await c.PostAsync(Config.Api,null); Logger.Info("Wake");}catch(System.Exception e){Logger.Error(e.Message);}}}
+using System.Net.Http.Headers;
+
+namespace Win1223;
+
+public static class WakeService
+{
+    private static readonly HttpClient client = new();
+
+    public static async Task<bool> WakeAsync()
+    {
+        try
+        {
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Config.ApiToken);
+
+            var r = await client.PostAsync(Config.ApiUrl, null);
+
+            return r.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+}
