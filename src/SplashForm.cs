@@ -26,9 +26,6 @@ public partial class SplashForm : Form
             return;
         }
 
-        progress.Value =
-            Math.Max(0, Math.Min(100, value));
-
-        progress.Invalidate();
+        progress.Value = Math.Max(0, Math.Min(100, value));
     }
 }
