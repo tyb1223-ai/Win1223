@@ -11,6 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -20,13 +21,32 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Publish EXE
+        shell: pwsh
         run: |
           dotnet publish src/Win1223.csproj `
             -c Release `
             -r win-x64 `
-            --self-contained true `
             /p:PublishSingleFile=true `
             /p:PublishTrimmed=false
+
+      - name: Download UPX
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip `
+            -OutFile upx.zip
+
+          Expand-Archive upx.zip upx
+
+      - name: Compress EXE
+        shell: pwsh
+        run: |
+          $upx = Get-ChildItem upx -Recurse -Filter upx.exe | Select-Object -First 1
+
+          & $upx.FullName `
+            --best `
+            --lzma `
+            src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
 
       - name: Upload EXE
         uses: actions/upload-artifact@v5
