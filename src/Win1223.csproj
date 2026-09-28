@@ -9,21 +9,18 @@
 
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
+    <!-- 自包含，一个 EXE -->
     <SelfContained>true</SelfContained>
-
     <PublishSingleFile>true</PublishSingleFile>
 
-    <!-- 真正有效的瘦身 -->
-    <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>partial</TrimMode>
-
-    <PublishReadyToRun>false</PublishReadyToRun>
-
+    <!-- 官方支持的瘦身 -->
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-
+    <PublishReadyToRun>false</PublishReadyToRun>
     <InvariantGlobalization>true</InvariantGlobalization>
-
     <DebugType>none</DebugType>
+
+    <!-- 不要开启 Trim -->
+    <PublishTrimmed>false</PublishTrimmed>
 
     <AssemblyName>Win1223</AssemblyName>
     <Product>Win1223 Cloud PC</Product>
