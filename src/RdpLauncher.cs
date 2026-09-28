@@ -5,32 +5,46 @@ namespace Win1223;
 
 public static class RdpLauncher
 {
-    public static async Task<bool> WaitForPortAsync()
+    public static async Task<bool> WaitForPortAsync(
+        Action<int> progress,
+        CancellationToken token)
     {
-        var end =
-            DateTime.Now.AddSeconds(
-                Config.MaxWaitSeconds);
+        var start = DateTime.Now;
+        var end = start.AddSeconds(Config.MaxWaitSeconds);
 
         while (DateTime.Now < end)
         {
+            token.ThrowIfCancellationRequested();
+
             using var tcp = new TcpClient();
 
             try
             {
-                var task =
+                var connect =
                     tcp.ConnectAsync(
                         Config.Host,
                         Config.Port);
 
-                if (await Task.WhenAny(task, Task.Delay(300)) == task &&
+                if (await Task.WhenAny(connect, Task.Delay(300, token)) == connect &&
                     tcp.Connected)
+                {
+                    progress(100);
                     return true;
+                }
             }
             catch
             {
             }
 
-            await Task.Delay(300);
+            var elapsed = DateTime.Now - start;
+
+            var percent =
+                30 +
+                (int)(elapsed.TotalSeconds /
+                      Config.MaxWaitSeconds *
+                      65);
+
+            progress(Math.Min(percent, 95));
         }
 
         return false;
@@ -38,7 +52,7 @@ public static class RdpLauncher
 
     public static void Launch()
     {
-        if (IsMstscRunning())
+        if (Process.GetProcessesByName("mstsc").Length > 0)
             return;
 
         Process.Start(new ProcessStartInfo
@@ -47,17 +61,5 @@ public static class RdpLauncher
             Arguments = $"/v:{Config.Host}:{Config.Port}",
             UseShellExecute = true
         });
-    }
-
-    private static bool IsMstscRunning()
-    {
-        try
-        {
-            return Process.GetProcessesByName("mstsc").Length > 0;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }
