@@ -11,6 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -31,4 +32,3 @@ jobs:
         with:
           name: Win1223
           path: src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
-          
