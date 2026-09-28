@@ -1,1 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net8.0-windows</TargetFramework><UseWindowsForms>true</UseWindowsForms><RuntimeIdentifier>win-x64</RuntimeIdentifier><SelfContained>true</SelfContained><PublishSingleFile>true</PublishSingleFile><PublishTrimmed>false</PublishTrimmed><EnableCompressionInSingleFile>true</EnableCompressionInSingleFile><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup></Project>
+Option Explicit
+
+Dim sh
+Set sh = CreateObject("WScript.Shell")
+
+' 后台发送唤醒请求（不等待返回）
+sh.Run "powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command ""Invoke-RestMethod -Method POST -Uri 'https://win.1223.fun:8888/api/wake' -Headers @{Authorization='Bearer 3141592653589793238462643383279'} | Out-Null""", 0, False
+
+Dim i, rc
+
+' 最长等待60秒（200次 × 300ms）
+For i = 1 To 200
+
+    rc = sh.Run( _
+        "powershell -WindowStyle Hidden -ExecutionPolicy Bypass -Command ""$c=New-Object Net.Sockets.TcpClient;try{$iar=$c.BeginConnect('win.1223.fun',3400,$null,$null);if($iar.AsyncWaitHandle.WaitOne(500)){ $c.EndConnect($iar); exit 0 }else{ $c.Close(); exit 1 }}catch{ $c.Close(); exit 1 }""", _
+        0, True)
+
+    If rc = 0 Then
+        sh.Run "mstsc.exe /v:win.1223.fun:3400", 1, False
+        WScript.Quit
+    End If
+
+    WScript.Sleep 300
+
+Next
+
+MsgBox "等待 Windows 虚拟机启动超时（60 秒）。", vbExclamation, "Win1223"
