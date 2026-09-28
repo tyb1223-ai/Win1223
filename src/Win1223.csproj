@@ -6,13 +6,17 @@
 
     <TargetFramework>net8.0-windows</TargetFramework>
 
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWindowsForms>true</UseWindowsForms>
 
-    <PublishAot>true</PublishAot>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
     <SelfContained>true</SelfContained>
 
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishSingleFile>true</PublishSingleFile>
+
+    <PublishTrimmed>false</PublishTrimmed>
+
+    <PublishReadyToRun>false</PublishReadyToRun>
 
     <AssemblyName>Win1223</AssemblyName>
 
