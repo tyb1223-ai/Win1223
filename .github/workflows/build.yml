@@ -1,1 +1,46 @@
+name: Build Win1223
 
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish Win1223
+        run: >
+          dotnet publish src/Win1223.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          /p:PublishSingleFile=true
+          /p:PublishTrimmed=true
+
+      - name: Install NSIS
+        run: choco install nsis -y
+
+      - name: Copy EXE
+        shell: pwsh
+        run: |
+          Copy-Item "src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe" "Win1223.exe"
+
+      - name: Build Installer
+        run: makensis installer.nsi
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Win1223_Setup
+          path: Win1223_Setup.exe
