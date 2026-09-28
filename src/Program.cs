@@ -7,28 +7,34 @@ internal static class Program
     [STAThread]
     static async Task Main()
     {
-        using var mutex = new Mutex(true, "Win1223Singleton", out bool first);
+        using var mutex =
+            new Mutex(
+                true,
+                "Win1223Singleton",
+                out bool first);
 
         if (!first)
             return;
 
-        bool ok = await WakeService.WakeAsync();
+        bool ok =
+            await WakeService.WakeAsync();
 
         if (!ok)
         {
             NativeMessageBox.Show(
-                "唤醒服务器失败。",
+                "无法连接服务器。",
                 "Win1223");
 
             return;
         }
 
-        ok = await RdpLauncher.WaitForPortAsync();
+        ok =
+            await RdpLauncher.WaitForPortAsync();
 
         if (!ok)
         {
             NativeMessageBox.Show(
-                "等待 Windows 虚拟机启动超时（60 秒）。",
+                "等待 Windows 启动超时（60 秒）。",
                 "Win1223");
 
             return;
