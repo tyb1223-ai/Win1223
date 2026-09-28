@@ -1,23 +1,29 @@
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace Win1223;
 
 public static class WakeService
 {
-    private static readonly HttpClient client = new();
+    private static readonly HttpClient Client =
+        new(new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+        })
+        {
+            Timeout = TimeSpan.FromSeconds(8)
+        };
 
     public static async Task<bool> WakeAsync()
     {
         try
         {
-            client.DefaultRequestHeaders.Authorization =
+            Client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
                     "Bearer",
                     Config.ApiToken);
 
             using var response =
-                await client.PostAsync(
+                await Client.PostAsync(
                     Config.ApiUrl,
                     null);
 
