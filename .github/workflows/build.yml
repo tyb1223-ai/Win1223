@@ -3,61 +3,27 @@ name: Build Win1223
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
 
-      - name: Publish EXE
+      - name: Publish Native AOT
         shell: pwsh
         run: |
           dotnet publish src/Win1223.csproj `
             -c Release `
-            -r win-x64 `
-            /p:PublishSingleFile=true `
-            /p:PublishTrimmed=false
+            -r win-x64
 
-      - name: Download UPX
-        shell: pwsh
-        run: |
-          Invoke-WebRequest `
-            https://github.com/upx/upx/releases/download/v5.0.2/upx-5.0.2-win64.zip `
-            -OutFile upx.zip
-
-          Expand-Archive upx.zip upx
-
-      - name: Compress EXE
-        shell: pwsh
-        run: |
-          $upx = Get-ChildItem upx -Recurse -Filter upx.exe | Select-Object -First 1
-
-          if (-not $upx) {
-            throw "UPX not found."
-          }
-
-          & $upx.FullName `
-            --best `
-            --lzma `
-            --force `
-            src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "UPX compression failed."
-          }
-
-      - name: Upload EXE
-        uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v5
         with:
           name: Win1223
           path: src/bin/Release/net8.0-windows/win-x64/publish/Win1223.exe
