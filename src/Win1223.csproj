@@ -1,38 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-
     <OutputType>WinExe</OutputType>
-
     <TargetFramework>net8.0-windows</TargetFramework>
 
-    <UseWindowsForms>true</UseWindowsForms>
+    <PublishAot>true</PublishAot>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <InvariantGlobalization>true</InvariantGlobalization>
 
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
-    <!-- 不再打包整个.NET运行时 -->
-    <SelfContained>false</SelfContained>
-
-    <!-- 单文件 -->
-    <PublishSingleFile>true</PublishSingleFile>
-
-    <!-- WinForms不要Trim -->
-    <PublishTrimmed>false</PublishTrimmed>
-
-    <!-- 程序信息 -->
     <AssemblyName>Win1223</AssemblyName>
     <Product>Win1223 Cloud PC</Product>
     <Company>1223.fun</Company>
 
-    <FileVersion>3.0.0.0</FileVersion>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
 
-    <!-- 图标 -->
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
-
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-
   </PropertyGroup>
 
 </Project>
