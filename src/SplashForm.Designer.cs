@@ -16,23 +16,42 @@ partial class SplashForm
 
         SuspendLayout();
 
+        // ===== 窗口 =====
+        AutoScaleMode = AutoScaleMode.None;
         BackColor = Color.White;
+        ForeColor = Color.FromArgb(32, 32, 32);
+
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.CenterScreen;
-        ClientSize = new Size(430,220);
+        ShowInTaskbar = false;
+        MaximizeBox = false;
+        MinimizeBox = false;
 
+        // 给 DWM 阴影留 1px 外边距
+        Padding = new Padding(1);
+
+        // 双缓冲，避免首次白屏和闪烁
+        DoubleBuffered = true;
+
+        ClientSize = new Size(432, 222);
+
+        // ===== 标题 =====
         lblTitle.AutoSize = true;
-        lblTitle.Font = new Font("Segoe UI",18,FontStyle.Bold);
-        lblTitle.Location = new Point(65,45);
+        lblTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+        lblTitle.ForeColor = Color.FromArgb(32, 32, 32);
+        lblTitle.Location = new Point(64, 42);
         lblTitle.Text = "Win1223 Cloud PC";
 
+        // ===== 状态 =====
         lblStatus.AutoSize = true;
-        lblStatus.Font = new Font("Segoe UI",10);
-        lblStatus.Location = new Point(65,95);
+        lblStatus.Font = new Font("Segoe UI", 10F);
+        lblStatus.ForeColor = Color.FromArgb(100, 110, 120);
+        lblStatus.Location = new Point(64, 94);
         lblStatus.Text = "正在连接服务器...";
 
-        progress.Location = new Point(65,145);
-        progress.Size = new Size(300,10);
+        // ===== 进度条 =====
+        progress.Location = new Point(64, 148);
+        progress.Size = new Size(304, 10);
 
         Controls.Add(lblTitle);
         Controls.Add(lblStatus);
@@ -43,7 +62,7 @@ partial class SplashForm
     }
 }
 
-internal class ProgressPanel : Control
+internal sealed class ProgressPanel : Control
 {
     private int _value;
 
@@ -60,13 +79,13 @@ internal class ProgressPanel : Control
     public ProgressPanel()
     {
         DoubleBuffered = true;
-        SetStyle(
-            ControlStyles.AllPaintingInWmPaint |
-            ControlStyles.UserPaint |
-            ControlStyles.OptimizedDoubleBuffer,
-            true);
 
-        BackColor = Color.Transparent;
+        SetStyle(
+            ControlStyles.UserPaint |
+            ControlStyles.AllPaintingInWmPaint |
+            ControlStyles.OptimizedDoubleBuffer |
+            ControlStyles.ResizeRedraw,
+            true);
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -75,15 +94,12 @@ internal class ProgressPanel : Control
 
         e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-        var rect = new Rectangle(0,0,Width-1,Height-1);
+        var bgRect = new Rectangle(0, 0, Width - 1, Height - 1);
 
-        using var bg =
-            new SolidBrush(Color.FromArgb(230,235,242));
+        using var bg = new SolidBrush(Color.FromArgb(230, 235, 242));
+        using var fg = new SolidBrush(Color.FromArgb(0, 120, 215));
 
-        using var fg =
-            new SolidBrush(Color.FromArgb(0,120,215));
-
-        FillRound(e.Graphics,bg,rect,Height/2);
+        FillRound(e.Graphics, bg, bgRect, Height / 2);
 
         int w = (int)(Width * Value / 100.0);
 
@@ -92,26 +108,27 @@ internal class ProgressPanel : Control
             FillRound(
                 e.Graphics,
                 fg,
-                new Rectangle(0,0,w,Height),
-                Height/2);
+                new Rectangle(0, 0, w, Height),
+                Height / 2);
         }
     }
 
     private static void FillRound(
         Graphics g,
         Brush brush,
-        Rectangle r,
+        Rectangle rect,
         int radius)
     {
         using GraphicsPath path = new();
 
-        path.AddArc(r.X,r.Y,radius*2,radius*2,180,90);
-        path.AddArc(r.Right-radius*2,r.Y,radius*2,radius*2,270,90);
-        path.AddArc(r.Right-radius*2,r.Bottom-radius*2,radius*2,radius*2,0,90);
-        path.AddArc(r.X,r.Bottom-radius*2,radius*2,radius*2,90,90);
+        int d = radius * 2;
 
+        path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+        path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+        path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+        path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
         path.CloseFigure();
 
-        g.FillPath(brush,path);
+        g.FillPath(brush, path);
     }
 }
