@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-
     <TargetFramework>net8.0-windows</TargetFramework>
 
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+    <!-- Native AOT -->
     <PublishAot>true</PublishAot>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>true</PublishSingleFile>
-    <InvariantGlobalization>true</InvariantGlobalization>
 
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- NativeAOT不能和PublishSingleFile同时开启 -->
+    <InvariantGlobalization>true</InvariantGlobalization>
 
     <AssemblyName>Win1223</AssemblyName>
     <Product>Win1223 Cloud PC</Product>
